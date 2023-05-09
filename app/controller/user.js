@@ -17,6 +17,9 @@ class UserController extends BaseController {
     const { ctx, app } = this;
     const { email, password, captcha, code } = ctx.request.body;
     // 验证码校验
+
+    console.log('🚀 ~ file: user.js:22 ~ UserController ~ login ~ toUpperCase:', captcha);
+    console.log('🚀 ~ file: user.js:22 ~ UserController ~ login ~ toUpperCase:', ctx.session.captcha);
     if (captcha.toUpperCase() !== ctx.session.captcha.toUpperCase()) {
       return this.error('验证码错误');
     }
@@ -55,8 +58,10 @@ class UserController extends BaseController {
     // 获取数据
     const { email, password, captcha, nickname } = ctx.request.body;
     console.log(email, password, captcha, nickname);
+    console.log('🚀 ~ file: user.js:58 ~ UserController ~ register ~ captcha:', captcha);
 
     // 校验验证码
+
     console.log(captcha.toUpperCase(), ctx.session.captcha.toUpperCase());
     if (captcha.toUpperCase() !== ctx.session.captcha.toUpperCase()) {
       this.error('验证码错误');
