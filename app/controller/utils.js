@@ -1,5 +1,5 @@
 const svgCaptcha = require('svg-captcha');
-
+const fse = require('fs-extra');
 const BaseController = require('./base');
 
 class UtilsController extends BaseController {
@@ -33,6 +33,19 @@ class UtilsController extends BaseController {
       this.error('发送失败');
     }
   }
+
+  async uploadFile () {
+    const { ctx } = this;
+    const file = ctx.request.files[0];
+    console.log('🚀 ~ file: utils.js:40 ~ UtilsController ~ uploadFile ~ ctx.request.files:', ctx.request.files);
+    console.log('🚀 ~ file: utils.js:40 ~ UtilsController ~ uploadFile ~ file:', file);
+    const { name } = ctx.request.body;
+    await fse.move(file.filepath, this.config.UPLOAD_DIR + '/' + file.filename);
+    this.success({
+      url: `/public/${file.filename}`,
+    });
+  }
+
 }
 
 module.exports = UtilsController;

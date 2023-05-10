@@ -5,7 +5,7 @@ module.exports = ({ app }) => {
   return async function verify (ctx, next) {
     if (!ctx.request.header.authorization) {
       ctx.body = {
-        code: -1,
+        code: -666,
         message: '用户未登录',
       };
       return;
@@ -13,11 +13,13 @@ module.exports = ({ app }) => {
     const token = ctx.request.header.authorization.replace('Bearer ', '');
     try {
       const ret = await jwt.verify(token, app.config.jwt.secret);
-      console.log(ret);
       ctx.state.email = ret.email;
       ctx.state.userid = ret._id;
+      console.log('🚀 ~ file: jwt.js:18 ~ verify ~ ctx.state:', ctx.state);
+
       await next();
     } catch (err) {
+      console.log('🚀 ~ file: jwt.js:23 ~ verify ~ err:', err);
       if (err.name === 'TokenExpireError') {
         ctx.body = {
           code: -666, message: '登录过期了',

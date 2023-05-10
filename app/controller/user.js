@@ -39,7 +39,7 @@ class UserController extends BaseController {
     const token = jwt.sign({
       _id: user._id, email,
     }, app.config.jwt.secret, {
-      expiresIn: '1h',
+      expiresIn: '1d',
     });
     this.success({
       token, email,
@@ -92,7 +92,13 @@ class UserController extends BaseController {
   }
 
   async info () {
-    this.success('ok');
+    const { ctx } = this;
+    // 获取header,解析
+    // 不知道是哪个邮件，需要从token里读取
+    // 有的结构需要从token里获取有的不需要
+    const { email } = ctx.state;
+    const user = await this.checkEmail(email);
+    this.success(user);
   }
 }
 
