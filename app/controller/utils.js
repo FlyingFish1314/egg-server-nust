@@ -1,6 +1,7 @@
 const svgCaptcha = require('svg-captcha');
 const fse = require('fs-extra');
 const BaseController = require('./base');
+const path = require('path');
 
 class UtilsController extends BaseController {
   async captcha () {
@@ -35,15 +36,19 @@ class UtilsController extends BaseController {
   }
 
   async uploadFile () {
+    // /public/hash/(hash+index)
     const { ctx } = this;
     const file = ctx.request.files[0];
-    console.log('🚀 ~ file: utils.js:40 ~ UtilsController ~ uploadFile ~ ctx.request.files:', ctx.request.files);
-    console.log('🚀 ~ file: utils.js:40 ~ UtilsController ~ uploadFile ~ file:', file);
-    const { name } = ctx.request.body;
-    await fse.move(file.filepath, this.config.UPLOAD_DIR + '/' + file.filename);
-    this.success({
-      url: `/public/${file.filename}`,
-    });
+    const { name, hash } = ctx.request.body;
+    const chunkPath = path.resolve(this.config.UPLOAD_DIR, hash);
+    // 文件最终存储位置
+    // const filePath = path.resolve()
+    if (!fse.existsSync(chunkPath)) {
+      await fse.mkdir(chunkPath);
+    }
+    // await fse.move(file.filepath, this.config.UPLOAD_DIR + '/' + file.filename);
+    await fse.move(file.filepath, `${chunkPath}/${name}`);
+    this.message('切片上传成功');
   }
 
 }
