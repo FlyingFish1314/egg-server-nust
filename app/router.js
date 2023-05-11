@@ -11,6 +11,7 @@ module.exports = app => {
   router.get('/captcha', controller.utils.captcha);
   router.get('/sendcode', controller.utils.sendcode);
   router.post('/uploadFile', controller.utils.uploadFile);
+  router.post('/mergeFile', controller.utils.mergeFile);
 
 
   router.group({ name: 'users', prefix: '/user' }, router => {

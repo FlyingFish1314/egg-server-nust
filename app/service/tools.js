@@ -1,4 +1,6 @@
 const { Service } = require('egg');
+const fse = require('fs-extra');
+const path = require('path');
 const nodemailer = require('nodemailer');
 
 const userEmail = 'fanenlongwork@126.com';
@@ -13,6 +15,34 @@ const transporter = nodemailer.createTransport({
 });
 
 class ToolService extends Service {
+  async mergeFile (filePath, fileHash, size) {
+    console.log('🚀 ~ file: tools.js:19 ~ ToolService ~ mergeFile ~ fileHash:', fileHash);
+    const chunkDir = path.resolve(this.config.UPLOAD_DIR, fileHash);
+    let chunks = await fse.readdir(chunkDir);
+    chunks.sort((a, b) => a.split('-')[1] - b.split('-')[1]);
+    console.log('🚀 ~ file: tools.js:23 ~ ToolService ~ mergeFile ~ chunks:', chunks);
+    chunks = chunks.map(cp => path.resolve(chunkDir, cp));
+    console.log('🚀 ~ file: tools.js:25 ~ ToolService ~ mergeFile ~ chunks:', chunks);
+    await this.mergeChunks(chunks, filePath, size);
+  }
+  async mergeChunks (files, dest, size) {
+    const pipStream = (filePath, writeStream) => new Promise(resolve => {
+      const readStream = fse.createReadStream(filePath);
+      readStream.on('end', () => {
+        fse.unlinkSync(filePath);
+        resolve();
+      });
+      readStream.pipe(writeStream);
+    });
+    await Promise.all(
+      files.map((file, index) => {
+        pipStream(file, fse.createWriteStream(dest, {
+          start: index * size,
+          end: (index + 1) * size,
+        }));
+      })
+    );
+  }
   async sendMail (email, subject, test, html) {
     const mailOptions = {
       from: userEmail,

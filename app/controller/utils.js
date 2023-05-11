@@ -34,7 +34,15 @@ class UtilsController extends BaseController {
       this.error('发送失败');
     }
   }
-
+  async mergeFile () {
+    const { ext, size, hash } = this.ctx.request.body;
+    console.log('🚀 ~ file: utils.js:39 ~ UtilsController ~ mergeFile ~ ext, size, hash:', ext, size, hash);
+    const filePath = path.resolve(this.config.UPLOAD_DIR, `${hash}.${ext}`);
+    await this.ctx.service.tools.mergeFile(filePath, hash, size);
+    this.success({
+      url: `/public/${hash}.${ext}`,
+    });
+  }
   async uploadFile () {
     // /public/hash/(hash+index)
     const { ctx } = this;
