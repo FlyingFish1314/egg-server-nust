@@ -43,6 +43,30 @@ class UtilsController extends BaseController {
       url: `/public/${hash}.${ext}`,
     });
   }
+  async checkFile() {
+    const { ctx } = this;
+    const { ext, hash } = ctx.request.body;
+    const filePath = path.resolve(this.config.UPLOAD_DIR, `${hash}.${ext}`);
+
+    let uploaded = false;
+    let uploadList = [];
+    if (fse.existsSync(filePath)) {
+      // 文件存在
+      uploaded = true;
+    } else {
+      uploadList = await this.getUploadedList(this.config.UPLOAD_DIR, hash);
+    }
+    console.log('🚀 ~ file: utils.js:63 ~ UtilsController ~ checkFile ~ uploadList:', uploadList);
+    console.log('🚀 ~ file: utils.js:63 ~ UtilsController ~ checkFile ~ uploaded:', uploaded);
+    this.success({
+      uploaded,
+      uploadList,
+    });
+  }
+  async getUploadedList(dirPath) {
+    return fse.existsSync(dirPath) ? (await fse.readdir(dirPath)).filter(name => name[0] !== '/') : [];
+  }
+
   async uploadFile () {
     // /public/hash/(hash+index)
     const { ctx } = this;

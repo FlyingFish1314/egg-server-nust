@@ -12,6 +12,7 @@ module.exports = app => {
   router.get('/sendcode', controller.utils.sendcode);
   router.post('/uploadFile', controller.utils.uploadFile);
   router.post('/mergeFile', controller.utils.mergeFile);
+  router.post('/checkFile', controller.utils.checkFile);
 
 
   router.group({ name: 'users', prefix: '/user' }, router => {
