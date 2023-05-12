@@ -69,6 +69,13 @@ class UtilsController extends BaseController {
 
   async uploadFile () {
     // /public/hash/(hash+index)
+
+    // 报错
+    if (Math.random() > 0.3) {
+      console.log(this.ctx.request.body.name);
+      this.ctx.status = 500;
+      return;
+    }
     const { ctx } = this;
     const file = ctx.request.files[0];
     const { name, hash } = ctx.request.body;
