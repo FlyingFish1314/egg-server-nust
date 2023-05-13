@@ -30,7 +30,7 @@ class ToolService extends Service {
     const pipStream = (filePath, writeStream) => new Promise(resolve => {
       const readStream = fse.createReadStream(filePath);
       readStream.on('end', () => {
-        // fse.unlinkSync(filePath);
+        fse.unlinkSync(filePath);
         resolve();
       });
       readStream.pipe(writeStream);
